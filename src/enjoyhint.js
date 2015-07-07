@@ -82,7 +82,7 @@ var EnjoyHint = function (_options) {
                 setTimeout(function(){
                     that.clear();
                 }, 250);
-                $(document.body).scrollTo(step_data.selector, step_data.scrollAnimationSpeed || 250, {offset: -100});
+                $(document.body).scrollTo(step_data.selector, step_data.scrollAnimationSpeed || 250, {offset: -100 + (!isNaN(parseInt(step_data.scrollOffset)) ? step_data.scrollOffset : 0)});
                 setTimeout(function () {
                     var $element = $(step_data.selector);
                     var event = makeEventName(step_data.event);
