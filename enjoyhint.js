@@ -21,8 +21,8 @@ var EnjoyHint = function (_options) {
     var init = function () {
         if ($('.enjoyhint'))
             $('.enjoyhint').remove();
-        $('body').css({'overflow':'hidden'});
-        $(document).on("touchmove",lockTouch);
+        $('body').css({'overflow': 'hidden'});
+        $(document).on("touchmove", lockTouch);
 
         $body.enjoyhint({
             onNextClick: function () {
@@ -34,19 +34,19 @@ var EnjoyHint = function (_options) {
         });
     };
 
-    var lockTouch = function(e) {
+    var lockTouch = function (e) {
         e.preventDefault();
     };
 
     var destroyEnjoy = function () {
         $body = $('body');
         $('.enjoyhint').remove();
-        $("body").css({'overflow':'auto'});
+        $("body").css({'overflow': 'auto'});
         $(document).off("touchmove", lockTouch);
 
     };
 
-    that.clear = function(){
+    that.clear = function () {
         //(Remove userClass and set default text)
         $(".enjoyhint_next_btn").removeClass(that.nextUserClass);
         $(".enjoyhint_next_btn").text("Next");
@@ -58,8 +58,8 @@ var EnjoyHint = function (_options) {
 
     var stepAction = function () {
         if (data && data[current_step]) {
-            $(".enjoyhint").removeClass("enjoyhint-step-"+current_step);
-            $(".enjoyhint").addClass("enjoyhint-step-"+(current_step+1));
+            $(".enjoyhint").removeClass("enjoyhint-step-" + current_step);
+            $(".enjoyhint").addClass("enjoyhint-step-" + (current_step + 1));
             var step_data = data[current_step];
             if (step_data.onBeforeStart && typeof step_data.onBeforeStart === 'function') {
                 step_data.onBeforeStart();
@@ -79,7 +79,7 @@ var EnjoyHint = function (_options) {
                         }
                     }
                 }
-                setTimeout(function(){
+                setTimeout(function () {
                     that.clear();
                 }, 250);
                 $(document.body).scrollTo(step_data.selector, step_data.scrollAnimationSpeed || 250, {offset: -100 + (!isNaN(parseInt(step_data.scrollOffset)) ? step_data.scrollOffset : 0)});
@@ -93,34 +93,34 @@ var EnjoyHint = function (_options) {
                     if (step_data.event_selector) {
                         $event_element = $(step_data.event_selector);
                     }
-                    if (!step_data.event_type && step_data.event == "key"){
-                        $element.keydown(function( event ) {
-                            if ( event.which == step_data.keyCode ) {
+                    if (!step_data.event_type && step_data.event == "key") {
+                        $element.keydown(function (event) {
+                            if (event.which == step_data.keyCode) {
                                 current_step++;
                                 stepAction();
                             }
                         });
                     }
-                    if (step_data.showNext == true){
+                    if (step_data.showNext == true) {
                         $body.enjoyhint('show_next');
                     }
-                    if (step_data.showSkip == false){
+                    if (step_data.showSkip == false) {
                         $body.enjoyhint('hide_skip');
-                    }else{
+                    } else {
                         $body.enjoyhint('show_skip');
                     }
-                    if (step_data.showSkip == true){
+                    if (step_data.showSkip == true) {
 
                     }
 
 
-                    if (step_data.nextButton){
+                    if (step_data.nextButton) {
                         $(".enjoyhint_next_btn").addClass(step_data.nextButton.className || "");
                         $(".enjoyhint_next_btn").text(step_data.nextButton.text || "Next");
                         that.nextUserClass = step_data.nextButton.className
                     }
 
-                    if (step_data.skipButton){
+                    if (step_data.skipButton) {
                         $(".enjoyhint_skip_btn").addClass(step_data.skipButton.className || "");
                         $(".enjoyhint_skip_btn").text(step_data.skipButton.text || "Skip");
                         that.skipUserClass = step_data.skipButton.className
@@ -164,14 +164,14 @@ var EnjoyHint = function (_options) {
 
                     }
                     var max_habarites = Math.max($element.outerWidth(), $element.outerHeight());
-                    var radius = step_data.radius  || Math.round(max_habarites / 2) + 5;
+                    var radius = step_data.radius || Math.round(max_habarites / 2) + 5;
                     var offset = $element.offset();
                     var w = $element.outerWidth();
                     var h = $element.outerHeight();
                     var shape_margin = (step_data.margin !== undefined) ? step_data.margin : 10;
                     var coords = {
-                        x: offset.left + Math.round(w / 2) ,
-                        y: offset.top + Math.round(h / 2)  - $(document).scrollTop()
+                        x: offset.left + Math.round(w / 2),
+                        y: offset.top + Math.round(h / 2) - $(document).scrollTop()
                     };
                     var shape_data = {
                         center_x: coords.x,
@@ -204,11 +204,11 @@ var EnjoyHint = function (_options) {
 
     };
 
-    var nextStep = function(){
+    var nextStep = function () {
         current_step++;
         stepAction();
     };
-    var skipAll = function(){
+    var skipAll = function () {
         var step_data = data[current_step];
         var $element = $(step_data.selector);
         off(step_data.event);
@@ -342,8 +342,8 @@ var EnjoyHint = function (_options) {
                 // ========================---- enjoyhint ----==============================
                 // =======================================================================
                 that.canvas_size = {
-                    w: $(window).width()*1.4,
-                    h: $(window).height()*1.4
+                    w: $(window).width() * 1.4,
+                    h: $(window).height() * 1.4
                 };
                 var canvas_id = "enj_canvas";
 
@@ -353,8 +353,20 @@ var EnjoyHint = function (_options) {
                 that.$canvas = $('<canvas id="' + canvas_id + '" width="' + that.canvas_size.w + '" height="' + that.canvas_size.h + '" class="' + that.cl.main_canvas + '">').appendTo(that.enjoyhint);
                 that.$svg = $('<svg width="' + that.canvas_size.w + '" height="' + that.canvas_size.h + '" class="' + that.cl.main_canvas + ' ' + that.cl.main_svg + '">').appendTo(that.enjoyhint_svg_wrapper);
                 var defs = $(makeSVG('defs'));
-                var marker = $(makeSVG('marker', {id: "arrowMarker", viewBox: "0 0 36 21", refX: "21", refY: "10", markerUnits: "strokeWidth", orient: "auto", markerWidth: "16", markerHeight: "12"}));
-                var polilyne = $(makeSVG('path', {style: "fill:none; stroke:rgb(255,255,255); stroke-width:2", d: "M0,0 c30,11 30,9 0,20"}));
+                var marker = $(makeSVG('marker', {
+                    id: "arrowMarker",
+                    viewBox: "0 0 36 21",
+                    refX: "21",
+                    refY: "10",
+                    markerUnits: "strokeWidth",
+                    orient: "auto",
+                    markerWidth: "16",
+                    markerHeight: "12"
+                }));
+                var polilyne = $(makeSVG('path', {
+                    style: "fill:none; stroke:rgb(255,255,255); stroke-width:2",
+                    d: "M0,0 c30,11 30,9 0,20"
+                }));
                 defs.append(marker.append(polilyne)).appendTo(that.$svg);
                 that.kinetic_stage = new Kinetic.Stage({
                     container: that.cl.kinetic_container,
@@ -384,7 +396,7 @@ var EnjoyHint = function (_options) {
                     that.options.onNextClick();
                 });
 
-                that.$close_btn = $('<div>', {'class': that.cl.close_btn}).appendTo(that.enjoyhint).html('').click(function (e){
+                that.$close_btn = $('<div>', {'class': that.cl.close_btn}).appendTo(that.enjoyhint).html('').click(function (e) {
                     that.hide();
                     that.options.onSkipClick();
                 });
@@ -470,9 +482,6 @@ var EnjoyHint = function (_options) {
                 that.showSkipBtn = function () {
                     that.$skip_btn.removeClass(that.cl.hide);
                 };
-
-
-
 
 
                 that.renderCircle = function (data) {
@@ -591,7 +600,8 @@ var EnjoyHint = function (_options) {
                     var label_h = label.height();
                     var label_left = label.offset().left;
                     var label_right = label.offset().left + label_w;
-                    var label_top = label.offset().top - $(document).scrollTop();;
+                    var label_top = label.offset().top - $(document).scrollTop();
+                    ;
                     var label_bottom = label.offset().top + label_h;
 
                     var margin = 10;
@@ -663,7 +673,12 @@ var EnjoyHint = function (_options) {
                     setTimeout(function () {
                         $('#enjoyhint_arrpw_line').remove();
                         var d = 'M' + x_from + ',' + y_from + ' Q' + control_point_x + ',' + control_point_y + ' ' + x_to + ',' + y_to;
-                        that.$svg.append(makeSVG('path', {style: "fill:none; stroke:rgb(255,255,255); stroke-width:3", 'marker-end': "url(#arrowMarker)", d: d, id: 'enjoyhint_arrpw_line'}));
+                        that.$svg.append(makeSVG('path', {
+                            style: "fill:none; stroke:rgb(255,255,255); stroke-width:3",
+                            'marker-end': "url("+ location.href.replace(/#.*$/, '') +"#arrowMarker)",
+                            d: d,
+                            id: 'enjoyhint_arrpw_line'
+                        }));
                         that.enjoyhint.removeClass(that.cl.svg_transparent);
 
                     }, that.options.animation_time / 2);
@@ -821,7 +836,7 @@ var EnjoyHint = function (_options) {
                         top: label_y + label_height + 20
                     });
                     var left_skip = label_x + that.$next_btn.width() + 10;
-                    if (that.nextBtn == "hide"){
+                    if (that.nextBtn == "hide") {
                         left_skip = label_x;
                     }
 
@@ -830,7 +845,7 @@ var EnjoyHint = function (_options) {
                         top: label_y + label_height + 20
                     });
                     that.$close_btn.css({
-                        right : 10,
+                        right: 10,
                         top: 10
                     });
 

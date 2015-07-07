@@ -394,7 +394,7 @@ CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
                         var d = 'M' + x_from + ',' + y_from + ' Q' + control_point_x + ',' + control_point_y + ' ' + x_to + ',' + y_to;
                         that.$svg.append(makeSVG('path', {
                             style: "fill:none; stroke:rgb(255,255,255); stroke-width:3",
-                            'marker-end': "url(#arrowMarker)",
+                            'marker-end': "url("+ location.href.replace(/#.*$/, '') +"#arrowMarker)",
                             d: d,
                             id: 'enjoyhint_arrpw_line'
                         }));
