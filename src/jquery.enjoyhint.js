@@ -61,8 +61,8 @@ CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
                 // ========================---- enjoyhint ----==============================
                 // =======================================================================
                 that.canvas_size = {
-                    w: $(window).width()*1.4,
-                    h: $(window).height()*1.4
+                    w: $(window).width() * 1.4,
+                    h: $(window).height() * 1.4
                 };
                 var canvas_id = "enj_canvas";
 
@@ -72,8 +72,20 @@ CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
                 that.$canvas = $('<canvas id="' + canvas_id + '" width="' + that.canvas_size.w + '" height="' + that.canvas_size.h + '" class="' + that.cl.main_canvas + '">').appendTo(that.enjoyhint);
                 that.$svg = $('<svg width="' + that.canvas_size.w + '" height="' + that.canvas_size.h + '" class="' + that.cl.main_canvas + ' ' + that.cl.main_svg + '">').appendTo(that.enjoyhint_svg_wrapper);
                 var defs = $(makeSVG('defs'));
-                var marker = $(makeSVG('marker', {id: "arrowMarker", viewBox: "0 0 36 21", refX: "21", refY: "10", markerUnits: "strokeWidth", orient: "auto", markerWidth: "16", markerHeight: "12"}));
-                var polilyne = $(makeSVG('path', {style: "fill:none; stroke:rgb(255,255,255); stroke-width:2", d: "M0,0 c30,11 30,9 0,20"}));
+                var marker = $(makeSVG('marker', {
+                    id: "arrowMarker",
+                    viewBox: "0 0 36 21",
+                    refX: "21",
+                    refY: "10",
+                    markerUnits: "strokeWidth",
+                    orient: "auto",
+                    markerWidth: "16",
+                    markerHeight: "12"
+                }));
+                var polilyne = $(makeSVG('path', {
+                    style: "fill:none; stroke:rgb(255,255,255); stroke-width:2",
+                    d: "M0,0 c30,11 30,9 0,20"
+                }));
                 defs.append(marker.append(polilyne)).appendTo(that.$svg);
                 that.kinetic_stage = new Kinetic.Stage({
                     container: that.cl.kinetic_container,
@@ -103,7 +115,7 @@ CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
                     that.options.onNextClick();
                 });
 
-                that.$close_btn = $('<div>', {'class': that.cl.close_btn}).appendTo(that.enjoyhint).html('').click(function (e){
+                that.$close_btn = $('<div>', {'class': that.cl.close_btn}).appendTo(that.enjoyhint).html('').click(function (e) {
                     that.hide();
                     that.options.onSkipClick();
                 });
@@ -189,9 +201,6 @@ CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
                 that.showSkipBtn = function () {
                     that.$skip_btn.removeClass(that.cl.hide);
                 };
-
-
-
 
 
                 that.renderCircle = function (data) {
@@ -310,7 +319,8 @@ CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
                     var label_h = label.height();
                     var label_left = label.offset().left;
                     var label_right = label.offset().left + label_w;
-                    var label_top = label.offset().top - $(document).scrollTop();;
+                    var label_top = label.offset().top - $(document).scrollTop();
+                    ;
                     var label_bottom = label.offset().top + label_h;
 
                     var margin = 10;
@@ -382,7 +392,12 @@ CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
                     setTimeout(function () {
                         $('#enjoyhint_arrpw_line').remove();
                         var d = 'M' + x_from + ',' + y_from + ' Q' + control_point_x + ',' + control_point_y + ' ' + x_to + ',' + y_to;
-                        that.$svg.append(makeSVG('path', {style: "fill:none; stroke:rgb(255,255,255); stroke-width:3", 'marker-end': "url(#arrowMarker)", d: d, id: 'enjoyhint_arrpw_line'}));
+                        that.$svg.append(makeSVG('path', {
+                            style: "fill:none; stroke:rgb(255,255,255); stroke-width:3",
+                            'marker-end': "url(#arrowMarker)",
+                            d: d,
+                            id: 'enjoyhint_arrpw_line'
+                        }));
                         that.enjoyhint.removeClass(that.cl.svg_transparent);
 
                     }, that.options.animation_time / 2);
@@ -540,7 +555,7 @@ CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
                         top: label_y + label_height + 20
                     });
                     var left_skip = label_x + that.$next_btn.width() + 10;
-                    if (that.nextBtn == "hide"){
+                    if (that.nextBtn == "hide") {
                         left_skip = label_x;
                     }
 
@@ -549,7 +564,7 @@ CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
                         top: label_y + label_height + 20
                     });
                     that.$close_btn.css({
-                        right : 10,
+                        right: 10,
                         top: 10
                     });
 
