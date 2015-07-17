@@ -246,10 +246,13 @@ var EnjoyHint = function (_options) {
         switch (event_name) {
             case 'next':
                 nextStep();
-                break
+                break;
             case 'skip':
                 skipAll();
-                break
+                break;
+            default:
+                $body.trigger(makeEventName(event_name, true));
+                break;
         }
     };
 
