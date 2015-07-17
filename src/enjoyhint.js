@@ -157,7 +157,7 @@ var EnjoyHint = function (_options) {
                                 return;
                             }
                             current_step++;
-                            $(this).off(event);
+                            $event_element.off(event);
 
                             stepAction();
                         });
