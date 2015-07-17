@@ -39,6 +39,7 @@ var EnjoyHint = function (_options) {
     };
 
     var destroyEnjoy = function () {
+        options.onEnd();
         $body = $('body');
         $('.enjoyhint').remove();
         $("body").css({'overflow': 'auto'});
@@ -198,7 +199,6 @@ var EnjoyHint = function (_options) {
             }, timeout);
         } else {
             $body.enjoyhint('hide');
-            options.onEnd();
             destroyEnjoy();
         }
 
