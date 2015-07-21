@@ -604,7 +604,6 @@ var EnjoyHint = function (_options) {
                     var label_left = label.offset().left;
                     var label_right = label.offset().left + label_w;
                     var label_top = label.offset().top - $(document).scrollTop();
-                    ;
                     var label_bottom = label.offset().top + label_h;
 
                     var margin = 10;
@@ -636,6 +635,8 @@ var EnjoyHint = function (_options) {
                         right: label_right,
                         top: label_top,
                         bottom: label_bottom,
+                        label_w: label_w,
+                        label_h: label_h,
                         conn: {
                             left: conn_left,
                             right: conn_right,
@@ -678,7 +679,7 @@ var EnjoyHint = function (_options) {
                         var d = 'M' + x_from + ',' + y_from + ' Q' + control_point_x + ',' + control_point_y + ' ' + x_to + ',' + y_to;
                         that.$svg.append(makeSVG('path', {
                             style: "fill:none; stroke:rgb(255,255,255); stroke-width:3",
-                            'marker-end': "url("+ location.href.replace(/#.*$/, '') +"#arrowMarker)",
+                            'marker-end': "url(" + location.href.replace(/#.*$/, '') + "#arrowMarker)",
                             d: d,
                             id: 'enjoyhint_arrpw_line'
                         }));
@@ -836,7 +837,7 @@ var EnjoyHint = function (_options) {
 
                     that.$next_btn.css({
                         left: label_x,
-                        top: label_y + label_height + 20
+                        top: label_y + label_data.label_h + 20
                     });
                     var left_skip = label_x + that.$next_btn.width() + 10;
                     if (that.nextBtn == "hide") {
@@ -845,7 +846,7 @@ var EnjoyHint = function (_options) {
 
                     that.$skip_btn.css({
                         left: left_skip,
-                        top: label_y + label_height + 20
+                        top: label_y + label_data.label_h + 20
                     });
                     that.$close_btn.css({
                         right: 10,
