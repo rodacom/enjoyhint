@@ -86,115 +86,118 @@ var EnjoyHint = function (_options) {
                 $(document.body).scrollTo(step_data.selector, step_data.scrollAnimationSpeed || 250, {offset: -100 + (!isNaN(parseInt(step_data.scrollOffset)) ? step_data.scrollOffset : 0)});
                 setTimeout(function () {
                     var $element = $(step_data.selector);
-                    var event = makeEventName(step_data.event);
 
-                    $body.enjoyhint('show');
-                    $body.enjoyhint('hide_next');
-                    var $event_element = $element;
-                    if (step_data.event_selector) {
-                        $event_element = $(step_data.event_selector);
-                    }
-                    if (!step_data.event_type && step_data.event == "key") {
-                        $element.keydown(function (event) {
-                            if (event.which == step_data.keyCode) {
-                                current_step++;
-                                stepAction();
-                            }
-                        });
-                    }
-                    if (step_data.showNext == true) {
-                        $body.enjoyhint('show_next');
-                    }
-                    if (step_data.showSkip == false) {
-                        $body.enjoyhint('hide_skip');
-                    } else {
-                        $body.enjoyhint('show_skip');
-                    }
-                    if (step_data.showSkip == true) {
+                    if($element.length > 0){
+                        var event = makeEventName(step_data.event);
 
-                    }
-
-
-                    if (step_data.nextButton) {
-                        $(".enjoyhint_next_btn").addClass(step_data.nextButton.className || "");
-                        $(".enjoyhint_next_btn").text(step_data.nextButton.text || "Next");
-                        that.nextUserClass = step_data.nextButton.className
-                    }
-
-                    if (step_data.skipButton) {
-                        $(".enjoyhint_skip_btn").addClass(step_data.skipButton.className || "");
-                        $(".enjoyhint_skip_btn").text(step_data.skipButton.text || "Skip");
-                        that.skipUserClass = step_data.skipButton.className
-                    }
-
-                    if (step_data.event_type) {
-                        switch (step_data.event_type) {
-                            case 'auto':
-                                $element[step_data.event]();
-                                switch (step_data.event) {
-                                    case 'click':
-                                        break;
-                                }
-                                current_step++;
-                                stepAction();
-                                return;
-                                break;
-                            case 'custom':
-                                on(step_data.event, function () {
+                        $body.enjoyhint('show');
+                        $body.enjoyhint('hide_next');
+                        var $event_element = $element;
+                        if (step_data.event_selector) {
+                            $event_element = $(step_data.event_selector);
+                        }
+                        if (!step_data.event_type && step_data.event == "key") {
+                            $element.keydown(function (event) {
+                                if (event.which == step_data.keyCode) {
                                     current_step++;
-                                    off(step_data.event);
                                     stepAction();
-                                });
-                                break;
-                            case 'next':
-                                $body.enjoyhint('show_next');
-                                break;
+                                }
+                            });
+                        }
+                        if (step_data.showNext == true) {
+                            $body.enjoyhint('show_next');
+                        }
+                        if (step_data.showSkip == false) {
+                            $body.enjoyhint('hide_skip');
+                        } else {
+                            $body.enjoyhint('show_skip');
+                        }
+                        if (step_data.showSkip == true) {
 
                         }
 
-                    } else {
-                        $event_element.on(event, function (e) {
-                            if (step_data.keyCode && e.keyCode != step_data.keyCode) {
-                                return;
+
+                        if (step_data.nextButton) {
+                            $(".enjoyhint_next_btn").addClass(step_data.nextButton.className || "");
+                            $(".enjoyhint_next_btn").text(step_data.nextButton.text || "Next");
+                            that.nextUserClass = step_data.nextButton.className
+                        }
+
+                        if (step_data.skipButton) {
+                            $(".enjoyhint_skip_btn").addClass(step_data.skipButton.className || "");
+                            $(".enjoyhint_skip_btn").text(step_data.skipButton.text || "Skip");
+                            that.skipUserClass = step_data.skipButton.className
+                        }
+
+                        if (step_data.event_type) {
+                            switch (step_data.event_type) {
+                                case 'auto':
+                                    $element[step_data.event]();
+                                    switch (step_data.event) {
+                                        case 'click':
+                                            break;
+                                    }
+                                    current_step++;
+                                    stepAction();
+                                    return;
+                                    break;
+                                case 'custom':
+                                    on(step_data.event, function () {
+                                        current_step++;
+                                        off(step_data.event);
+                                        stepAction();
+                                    });
+                                    break;
+                                case 'next':
+                                    $body.enjoyhint('show_next');
+                                    break;
+
                             }
-                            current_step++;
-                            $event_element.off(event);
 
-                            stepAction();
-                        });
+                        } else {
+                            $event_element.on(event, function (e) {
+                                if (step_data.keyCode && e.keyCode != step_data.keyCode) {
+                                    return;
+                                }
+                                current_step++;
+                                $event_element.off(event);
 
+                                stepAction();
+                            });
+
+                        }
+                        var max_habarites = Math.max($element.outerWidth(), $element.outerHeight());
+                        var radius = step_data.radius || Math.round(max_habarites / 2) + 5;
+                        var offset = $element.offset();
+                        var w = $element.outerWidth();
+                        var h = $element.outerHeight();
+                        var shape_margin = (step_data.margin !== undefined) ? step_data.margin : 10;
+                        var coords = {
+                            x: offset.left + Math.round(w / 2),
+                            y: offset.top + Math.round(h / 2) - $(document).scrollTop()
+                        };
+                        var shape_data = {
+                            center_x: coords.x,
+                            center_y: coords.y,
+                            text: step_data.description,
+                            top: step_data.top,
+                            bottom: step_data.bottom,
+                            left: step_data.left,
+                            right: step_data.right,
+                            margin: step_data.margin,
+                            scroll: step_data.scroll
+                        };
+
+                        if (step_data.shape && step_data.shape == 'circle') {
+                            shape_data.shape = 'circle';
+                            shape_data.radius = radius;
+                        } else {
+                            shape_data.radius = 0;
+                            shape_data.width = w + shape_margin;
+                            shape_data.height = h + shape_margin;
+                        }
+                        $body.enjoyhint('render_label_with_shape', shape_data);
                     }
-                    var max_habarites = Math.max($element.outerWidth(), $element.outerHeight());
-                    var radius = step_data.radius || Math.round(max_habarites / 2) + 5;
-                    var offset = $element.offset();
-                    var w = $element.outerWidth();
-                    var h = $element.outerHeight();
-                    var shape_margin = (step_data.margin !== undefined) ? step_data.margin : 10;
-                    var coords = {
-                        x: offset.left + Math.round(w / 2),
-                        y: offset.top + Math.round(h / 2) - $(document).scrollTop()
-                    };
-                    var shape_data = {
-                        center_x: coords.x,
-                        center_y: coords.y,
-                        text: step_data.description,
-                        top: step_data.top,
-                        bottom: step_data.bottom,
-                        left: step_data.left,
-                        right: step_data.right,
-                        margin: step_data.margin,
-                        scroll: step_data.scroll
-                    };
-
-                    if (step_data.shape && step_data.shape == 'circle') {
-                        shape_data.shape = 'circle';
-                        shape_data.radius = radius;
-                    } else {
-                        shape_data.radius = 0;
-                        shape_data.width = w + shape_margin;
-                        shape_data.height = h + shape_margin;
-                    }
-                    $body.enjoyhint('render_label_with_shape', shape_data);
                 }, step_data.scrollAnimationSpeed + 20 || 270);
             }, timeout);
         } else {
