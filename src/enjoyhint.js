@@ -7,7 +7,9 @@ var EnjoyHint = function (_options) {
         },
         onEnd: function () {
 
-        }
+        },
+        nextButtonLabel: "Next",
+        skipButtonLabel: "Skip"
     };
     var options = $.extend(defaults, _options);
 
@@ -50,9 +52,9 @@ var EnjoyHint = function (_options) {
     that.clear = function () {
         //(Remove userClass and set default text)
         $(".enjoyhint_next_btn").removeClass(that.nextUserClass);
-        $(".enjoyhint_next_btn").text("Next");
+        $(".enjoyhint_next_btn").text(options.nextButtonLabel);
         $(".enjoyhint_skip_btn").removeClass(that.skipUserClass);
-        $(".enjoyhint_skip_btn").text("Skip");
+        $(".enjoyhint_skip_btn").text(options.skipButtonLabel);
     }
 
     var $body = $('body');
@@ -83,11 +85,13 @@ var EnjoyHint = function (_options) {
                 setTimeout(function () {
                     that.clear();
                 }, 250);
-                $(document.body).scrollTo(step_data.selector, step_data.scrollAnimationSpeed || 250, {offset: -100 + (!isNaN(parseInt(step_data.scrollOffset)) ? step_data.scrollOffset : 0)});
-                setTimeout(function () {
-                    var $element = $(step_data.selector);
+                var scrollToSetting = {offset: -100 + (!isNaN(parseInt(step_data.scrollOffset)) ? step_data.scrollOffset : 0)};
+                var $element = $(step_data.selector);
+                if ($element.length > 0 && $element.is(':visible')) {
+                    $(document.body).scrollTo(step_data.selector, step_data.scrollAnimationSpeed || 250, scrollToSetting);
+                    setTimeout(function () {
 
-                    if($element.length > 0){
+
                         var event = makeEventName(step_data.event);
 
                         $body.enjoyhint('show');
@@ -119,13 +123,13 @@ var EnjoyHint = function (_options) {
 
                         if (step_data.nextButton) {
                             $(".enjoyhint_next_btn").addClass(step_data.nextButton.className || "");
-                            $(".enjoyhint_next_btn").text(step_data.nextButton.text || "Next");
+                            $(".enjoyhint_next_btn").text(step_data.nextButton.text || options.nextButtonLabel);
                             that.nextUserClass = step_data.nextButton.className
                         }
 
                         if (step_data.skipButton) {
                             $(".enjoyhint_skip_btn").addClass(step_data.skipButton.className || "");
-                            $(".enjoyhint_skip_btn").text(step_data.skipButton.text || "Skip");
+                            $(".enjoyhint_skip_btn").text(step_data.skipButton.text || options.skipButtonLabel);
                             that.skipUserClass = step_data.skipButton.className
                         }
 
@@ -197,8 +201,12 @@ var EnjoyHint = function (_options) {
                             shape_data.height = h + shape_margin;
                         }
                         $body.enjoyhint('render_label_with_shape', shape_data);
-                    }
-                }, step_data.scrollAnimationSpeed + 20 || 270);
+
+                    }, step_data.scrollAnimationSpeed + 20 || 270);
+                } else {
+                    current_step++;
+                    stepAction();
+                }
             }, timeout);
         } else {
             $body.enjoyhint('hide');

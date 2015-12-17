@@ -83,7 +83,7 @@ CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
                     markerHeight: "12"
                 }));
                 var polilyne = $(makeSVG('path', {
-                    style: "fill:none; stroke:rgb(255,255,255); stroke-width:2",
+                    style: "fill:none; stroke:rgb(232,120,018); stroke-width:2",
                     d: "M0,0 c30,11 30,9 0,20"
                 }));
                 defs.append(marker.append(polilyne)).appendTo(that.$svg);
@@ -97,7 +97,7 @@ CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
                 that.rect = new Kinetic.Rect({
 //          x: 0,
 //          y: 0,
-                    fill: 'rgba(0,0,0,0.8)',
+                    fill: 'rgba(0,0,0,0.75)',
                     width: that.canvas_size.w,
                     height: that.canvas_size.h
                 });
@@ -112,6 +112,8 @@ CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
                     that.options.onSkipClick();
                 });
                 that.$next_btn = $('<div>', {'class': that.cl.next_btn}).appendTo(that.enjoyhint).html('Next').click(function (e) {
+                    e.stopPropagation();
+                    e.preventDefault();
                     that.options.onNextClick();
                 });
 
@@ -394,7 +396,7 @@ CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
                         $('#enjoyhint_arrpw_line').remove();
                         var d = 'M' + x_from + ',' + y_from + ' Q' + control_point_x + ',' + control_point_y + ' ' + x_to + ',' + y_to;
                         that.$svg.append(makeSVG('path', {
-                            style: "fill:none; stroke:rgb(255,255,255); stroke-width:3",
+                            style: "fill:none; stroke:rgb(232,120,018); stroke-width:3",
                             'marker-end': "url(" + location.href.replace(/#.*$/, '') + "#arrowMarker)",
                             d: d,
                             id: 'enjoyhint_arrpw_line'
