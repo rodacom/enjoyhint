@@ -7,7 +7,9 @@ var EnjoyHint = function (_options) {
         },
         onEnd: function () {
 
-        }
+        },
+        nextButtonLabel: "Next",
+        skipButtonLabel: "Skip"
     };
     var options = $.extend(defaults, _options);
 
@@ -50,9 +52,9 @@ var EnjoyHint = function (_options) {
     that.clear = function () {
         //(Remove userClass and set default text)
         $(".enjoyhint_next_btn").removeClass(that.nextUserClass);
-        $(".enjoyhint_next_btn").text("Next");
+        $(".enjoyhint_next_btn").text(options.nextButtonLabel);
         $(".enjoyhint_skip_btn").removeClass(that.skipUserClass);
-        $(".enjoyhint_skip_btn").text("Skip");
+        $(".enjoyhint_skip_btn").text(options.skipButtonLabel);
     }
 
     var $body = $('body');
@@ -83,11 +85,13 @@ var EnjoyHint = function (_options) {
                 setTimeout(function () {
                     that.clear();
                 }, 250);
-                $(document.body).scrollTo(step_data.selector, step_data.scrollAnimationSpeed || 250, {offset: -100 + (!isNaN(parseInt(step_data.scrollOffset)) ? step_data.scrollOffset : 0)});
-                setTimeout(function () {
-                    var $element = $(step_data.selector);
+                var scrollToSetting = {offset: -100 + (!isNaN(parseInt(step_data.scrollOffset)) ? step_data.scrollOffset : 0)};
+                var $element = $(step_data.selector);
+                if ($element.length > 0 && $element.is(':visible')) {
+                    $(document.body).scrollTo(step_data.selector, step_data.scrollAnimationSpeed || 250, scrollToSetting);
+                    setTimeout(function () {
 
-                    if($element.length > 0){
+
                         var event = makeEventName(step_data.event);
 
                         $body.enjoyhint('show');
@@ -119,13 +123,13 @@ var EnjoyHint = function (_options) {
 
                         if (step_data.nextButton) {
                             $(".enjoyhint_next_btn").addClass(step_data.nextButton.className || "");
-                            $(".enjoyhint_next_btn").text(step_data.nextButton.text || "Next");
+                            $(".enjoyhint_next_btn").text(step_data.nextButton.text || options.nextButtonLabel);
                             that.nextUserClass = step_data.nextButton.className
                         }
 
                         if (step_data.skipButton) {
                             $(".enjoyhint_skip_btn").addClass(step_data.skipButton.className || "");
-                            $(".enjoyhint_skip_btn").text(step_data.skipButton.text || "Skip");
+                            $(".enjoyhint_skip_btn").text(step_data.skipButton.text || options.skipButtonLabel);
                             that.skipUserClass = step_data.skipButton.className
                         }
 
@@ -197,8 +201,12 @@ var EnjoyHint = function (_options) {
                             shape_data.height = h + shape_margin;
                         }
                         $body.enjoyhint('render_label_with_shape', shape_data);
-                    }
-                }, step_data.scrollAnimationSpeed + 20 || 270);
+
+                    }, step_data.scrollAnimationSpeed + 20 || 270);
+                } else {
+                    current_step++;
+                    stepAction();
+                }
             }, timeout);
         } else {
             $body.enjoyhint('hide');
@@ -370,7 +378,7 @@ var EnjoyHint = function (_options) {
                     markerHeight: "12"
                 }));
                 var polilyne = $(makeSVG('path', {
-                    style: "fill:none; stroke:rgb(255,255,255); stroke-width:2",
+                    style: "fill:none; stroke:rgb(232,120,018); stroke-width:2",
                     d: "M0,0 c30,11 30,9 0,20"
                 }));
                 defs.append(marker.append(polilyne)).appendTo(that.$svg);
@@ -384,7 +392,7 @@ var EnjoyHint = function (_options) {
                 that.rect = new Kinetic.Rect({
 //          x: 0,
 //          y: 0,
-                    fill: 'rgba(0,0,0,0.6)',
+                    fill: 'rgba(0,0,0,0.75)',
                     width: that.canvas_size.w,
                     height: that.canvas_size.h
                 });
@@ -399,6 +407,8 @@ var EnjoyHint = function (_options) {
                     that.options.onSkipClick();
                 });
                 that.$next_btn = $('<div>', {'class': that.cl.next_btn}).appendTo(that.enjoyhint).html('Next').click(function (e) {
+                    e.stopPropagation();
+                    e.preventDefault();
                     that.options.onNextClick();
                 });
 
@@ -681,7 +691,7 @@ var EnjoyHint = function (_options) {
                         $('#enjoyhint_arrpw_line').remove();
                         var d = 'M' + x_from + ',' + y_from + ' Q' + control_point_x + ',' + control_point_y + ' ' + x_to + ',' + y_to;
                         that.$svg.append(makeSVG('path', {
-                            style: "fill:none; stroke:rgb(255,255,255); stroke-width:3",
+                            style: "fill:none; stroke:rgb(232,120,018); stroke-width:3",
                             'marker-end': "url(" + location.href.replace(/#.*$/, '') + "#arrowMarker)",
                             d: d,
                             id: 'enjoyhint_arrpw_line'
