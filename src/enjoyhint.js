@@ -196,9 +196,8 @@ var EnjoyHint = function (_options) {
                         var h = $element.outerHeight();
 
                         var shape_margin = (step_data.margin !== undefined) ? step_data.margin : 10;
-
-                        var shape_margin_x = (step_data.margin_x !== undefined) ? step_data.margin_x : shape_margin;
-                        var shape_margin_y = (step_data.margin_y !== undefined) ? step_data.margin_y : shape_margin;
+                        var shape_margin_x = (step_data.margin_x !== undefined) ? step_data.margin_x : shape_margin / 2;
+                        var shape_margin_y = (step_data.margin_y !== undefined) ? step_data.margin_y : shape_margin / 2;
 
                         var shape_shift_x = (step_data.shift_x !== undefined) ? step_data.shift_x : 0;
                         var shape_shift_y = (step_data.shift_y !== undefined) ? step_data.shift_y : 0;
@@ -225,8 +224,8 @@ var EnjoyHint = function (_options) {
                             shape_data.radius = radius;
                         } else {
                             shape_data.radius = 0;
-                            shape_data.width = w + shape_margin;
-                            shape_data.height = h + shape_margin;
+                            shape_data.width = w + shape_margin_x;
+                            shape_data.height = h + shape_margin_y;
                         }
 
                         shape_data.center_x += shape_shift_x;
