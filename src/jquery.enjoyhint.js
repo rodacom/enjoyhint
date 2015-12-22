@@ -48,6 +48,7 @@ CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
                     main_svg: 'enjoyhint_svg',
                     svg_wrapper: 'enjoyhint_svg_wrapper',
                     svg_transparent: 'enjoyhint_svg_transparent',
+                    svg_arrow_transparent: 'enjoyhint_arrow_svg_transparent',
                     kinetic_container: 'kinetic_container'
                 };
                 function makeSVG(tag, attrs) {
@@ -61,13 +62,13 @@ CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
                 // ========================---- enjoyhint ----==============================
                 // =======================================================================
                 that.canvas_size = {
-                    w: $(window).width() * 1.4,
-                    h: $(window).height() * 1.4
+                    w: $(window).width(),
+                    h: $(window).height()
                 };
                 var canvas_id = "enj_canvas";
 
                 that.enjoyhint = $('<div>', {'class': that.cl.enjoy_hint + ' ' + that.cl.svg_transparent}).appendTo($that);
-                that.enjoyhint_svg_wrapper = $('<div>', {'class': that.cl.svg_wrapper + ' ' + that.cl.svg_transparent}).appendTo(that.enjoyhint);
+                that.enjoyhint_svg_wrapper = $('<div>', {'class': that.cl.svg_wrapper }).appendTo(that.enjoyhint);
                 that.$stage_container = $('<div id="' + that.cl.kinetic_container + '">').appendTo(that.enjoyhint);
                 that.$canvas = $('<canvas id="' + canvas_id + '" width="' + that.canvas_size.w + '" height="' + that.canvas_size.h + '" class="' + that.cl.main_canvas + '">').appendTo(that.enjoyhint);
                 that.$svg = $('<svg width="' + that.canvas_size.w + '" height="' + that.canvas_size.h + '" class="' + that.cl.main_canvas + ' ' + that.cl.main_svg + '">').appendTo(that.enjoyhint_svg_wrapper);
@@ -106,6 +107,17 @@ CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
                 var $bottom_dis_events = $top_dis_events.clone().appendTo(that.enjoyhint);
                 var $left_dis_events = $top_dis_events.clone().appendTo(that.enjoyhint);
                 var $right_dis_events = $top_dis_events.clone().appendTo(that.enjoyhint);
+
+                // Disable click event to prevent menu closing
+                var disableClickEvent = function (e) {
+                    e.stopPropagation();
+                    e.preventDefault();
+                };
+
+                $top_dis_events.click(disableClickEvent);
+                $bottom_dis_events.click(disableClickEvent);
+                $left_dis_events.click(disableClickEvent);
+                $right_dis_events.click(disableClickEvent);
 
                 that.$skip_btn = $('<div>', {'class': that.cl.skip_btn}).appendTo(that.enjoyhint).html('Skip').click(function (e) {
                     that.hide();
@@ -408,13 +420,47 @@ CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
 
 
                 that.getLabelElement = function (data) {
-                    return $('<div>', {"class": 'enjoy_hint_label', id: 'enjoyhint_label'})
-                        .css({
-                            'top': data.y + 'px',
-                            'left': data.x + 'px'
-                        })
-                        .html(data.text).appendTo(that.enjoyhint);
+                    // Generation of label container
+                    var labelContainer = $('<div>', {"class": 'enjoy_hint_label', id: 'enjoyhint_label'}).css({
+                        'top': data.y + 'px',
+                        'left': data.x + 'px',
+                        position: 'absolute'
+                    });
+                    // generation of blured background to prevent issue on description on highligting area
+                    var blurBackground = $('<div>').css({
+                        width: '100%',
+                        height: '100%',
+                        background: '#000',
+                        '-webkit-filter': 'blur(15px)',
+                        '-moz-filter': 'blur(15px)',
+                        '-o-filter': 'blur(15px)',
+                        '-ms-filter': 'blur(15px)',
+                        'filter': 'blur(15px)',
+                        position: 'absolute'
+                    });
+                    // generation of text container
+                    var textContainer = $('<div>').css({
+                        position: 'relative',
+                        'max-width': Math.round(that.canvas_size.w * 0.75) + 'px',
+                        'min-width': Math.round(that.canvas_size.w * 0.45) + 'px'
+                    }).html(data.text);
 
+                    labelContainer.append(blurBackground).append(textContainer).appendTo(that.enjoyhint);
+
+                    // label size setting updating
+                    blurBackground.width(textContainer.outerWidth());
+                    blurBackground.height(textContainer.outerHeight());
+                    labelContainer.width(textContainer.outerWidth());
+                    labelContainer.height(textContainer.outerHeight());
+
+                    if (labelContainer[0].offsetLeft + labelContainer.width() > that.canvas_size.w) {
+                        var left = parseFloat(labelContainer.css('left').substr(0, labelContainer.css('left').length - 2));
+                        left += that.canvas_size.w - (labelContainer[0].offsetLeft + labelContainer.width());
+                        labelContainer.css('left', left + 'px');
+                        data.y = left;
+                    }
+
+                    return labelContainer;
                 };
 
 
@@ -579,90 +625,95 @@ CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
                         right: shape_data.right
                     });
 
+                    if (data.arrow) {
+                        var x_to = 0;
+                        var y_to = 0;
+                        var arrow_side = false;
+                        var conn_label_side = 'left';
+                        var conn_circle_side = 'left';
 
-                    var x_to = 0;
-                    var y_to = 0;
-                    var arrow_side = false;
-                    var conn_label_side = 'left';
-                    var conn_circle_side = 'left';
+                        var is_center = (label_data.left <= shape_data.x && label_data.right >= shape_data.x);
+                        var is_left = (label_data.right < shape_data.x);
+                        var is_right = (label_data.left > shape_data.x);
 
-                    var is_center = (label_data.left <= shape_data.x && label_data.right >= shape_data.x);
-                    var is_left = (label_data.right < shape_data.x);
-                    var is_right = (label_data.left > shape_data.x);
+                        var is_abs_left = (label_data.right < shape_data.left);
+                        var is_abs_right = (label_data.left > shape_data.right);
 
-                    var is_abs_left = (label_data.right < shape_data.left);
-                    var is_abs_right = (label_data.left > shape_data.right);
-
-                    var is_top = (label_data.bottom < shape_data.top);
-                    var is_bottom = (label_data.top > shape_data.bottom);
-                    var is_mid = (label_data.bottom >= shape_data.y && label_data.top <= shape_data.y);
-                    var is_mid_top = (label_data.bottom <= shape_data.y && !is_top);
-                    var is_mid_bottom = (label_data.top >= shape_data.y && !is_bottom);
+                        var is_top = (label_data.bottom < shape_data.top);
+                        var is_bottom = (label_data.top > shape_data.bottom);
+                        var is_mid = (label_data.bottom >= shape_data.y && label_data.top <= shape_data.y);
+                        var is_mid_top = (label_data.bottom <= shape_data.y && !is_top);
+                        var is_mid_bottom = (label_data.top >= shape_data.y && !is_bottom);
 
 
-                    function setArrowData(l_s, c_s, a_s) {
-                        conn_label_side = l_s;
-                        conn_circle_side = c_s;
-                        arrow_side = a_s;
-                    }
-
-                    function sideStatements(top_s, mid_top_s, mid_s, mid_bottom_s, bottom_s) {
-                        var statement = [];
-                        if (is_top) {
-                            statement = top_s;
-                        } else if (is_mid_top) {
-                            statement = mid_top_s;
-                        } else if (is_mid) {
-                            statement = mid_s;
-                        } else if (is_mid_bottom) {
-                            statement = mid_bottom_s;
-                        } else {//bottom
-                            statement = bottom_s;
+                        function setArrowData(l_s, c_s, a_s) {
+                            conn_label_side = l_s;
+                            conn_circle_side = c_s;
+                            arrow_side = a_s;
                         }
-                        if (!statement) {
-                            return;
-                        } else {
-                            setArrowData(statement[0], statement[1], statement[2]);
+
+                        function sideStatements(top_s, mid_top_s, mid_s, mid_bottom_s, bottom_s) {
+                            var statement = [];
+                            if (is_top) {
+                                statement = top_s;
+                            } else if (is_mid_top) {
+                                statement = mid_top_s;
+                            } else if (is_mid) {
+                                statement = mid_s;
+                            } else if (is_mid_bottom) {
+                                statement = mid_bottom_s;
+                            } else {//bottom
+                                statement = bottom_s;
+                            }
+                            if (!statement) {
+                                return;
+                            } else {
+                                setArrowData(statement[0], statement[1], statement[2]);
+                            }
                         }
-                    }
 
 
-                    if (is_center) {
-                        if (is_top) {
-                            setArrowData('bottom', 'top', 'top');
-                        } else if (is_bottom) {
-                            setArrowData('top', 'bottom', 'bottom');
-                        } else {
-                            return;
+                        if (is_center) {
+                            if (is_top) {
+                                setArrowData('bottom', 'top', 'top');
+                            } else if (is_bottom) {
+                                setArrowData('top', 'bottom', 'bottom');
+                            } else {
+                                return;
+                            }
+                        } else if (is_left) {
+                            sideStatements(
+                                ['right', 'top', 'top'],//top
+                                ['bottom', 'left', 'bottom'],//mid_top
+                                ['right', 'left', 'top'],//mid
+                                ['top', 'left', 'top'],//mid_bot
+                                ['right', 'bottom', 'bottom']//bot
+                            );
+                        } else {//right
+                            sideStatements(
+                                ['left', 'top', 'top'],//top
+                                ['bottom', 'right', 'bottom'],//mid_top
+                                ['left', 'right', 'top'],//mid
+                                ['top', 'right', 'top'],//mid_bot
+                                ['left', 'bottom', 'bottom']//bot
+                            );
                         }
-                    } else if (is_left) {
-                        sideStatements(
-                            ['right', 'top', 'top'],//top
-                            ['bottom', 'left', 'bottom'],//mid_top
-                            ['right', 'left', 'top'],//mid
-                            ['top', 'left', 'top'],//mid_bot
-                            ['right', 'bottom', 'bottom']//bot
-                        );
-                    } else {//right
-                        sideStatements(
-                            ['left', 'top', 'top'],//top
-                            ['bottom', 'right', 'bottom'],//mid_top
-                            ['left', 'right', 'top'],//mid
-                            ['top', 'right', 'top'],//mid_bot
-                            ['left', 'bottom', 'bottom']//bot
-                        );
-                    }
 
-                    var label_conn_coordinates = label_data.conn[conn_label_side];
-                    var circle_conn_coordinates = shape_data.conn[conn_circle_side];
-                    var by_top_side = (arrow_side == 'top') ? true : false;
-                    that.renderArrow({
-                        x_from: label_conn_coordinates.x,
-                        y_from: label_conn_coordinates.y,
-                        x_to: circle_conn_coordinates.x,
-                        y_to: circle_conn_coordinates.y,
-                        by_top_side: by_top_side
-                    });
+                        var label_conn_coordinates = label_data.conn[conn_label_side];
+                        var circle_conn_coordinates = shape_data.conn[conn_circle_side];
+                        var by_top_side = (arrow_side == 'top') ? true : false;
+                        that.renderArrow({
+                            x_from: label_conn_coordinates.x,
+                            y_from: label_conn_coordinates.y,
+                            x_to: circle_conn_coordinates.x,
+                            y_to: circle_conn_coordinates.y,
+                            by_top_side: by_top_side
+                        });
+                        that.enjoyhint_svg_wrapper.removeClass(that.cl.svg_arrow_transparent);
+                    } else {
+                        that.enjoyhint_svg_wrapper.addClass(that.cl.svg_arrow_transparent);
+                        that.enjoyhint.removeClass(that.cl.svg_transparent);
+                    }
 
                 };
 

@@ -281,7 +281,7 @@
     left: 0;
 }
 
-.enjoyhint_svg_transparent .enjoyhint_svg_wrapper, .enjoyhint_svg_transparent .enjoy_hint_label {
+.enjoyhint_svg_transparent .enjoyhint_svg_wrapper, .enjoyhint_svg_transparent .enjoy_hint_label, .enjoyhint_arrow_svg_transparent {
     opacity: 0;
 }
 

@@ -55,9 +55,31 @@ var EnjoyHint = function (_options) {
         $(".enjoyhint_next_btn").text(options.nextButtonLabel);
         $(".enjoyhint_skip_btn").removeClass(that.skipUserClass);
         $(".enjoyhint_skip_btn").text(options.skipButtonLabel);
-    }
+    };
 
     var $body = $('body');
+
+
+    var callAfterEnd = function(step_data){
+        if (step_data.onAfterEnd && typeof step_data.onAfterEnd === 'function') {
+            step_data.onAfterEnd();
+        }
+    };
+
+    var nextStep = function () {
+        callAfterEnd(data[current_step]);
+        current_step++;
+        stepAction();
+    };
+
+    var skipAll = function () {
+        var step_data = data[current_step];
+        callAfterEnd(data[current_step]);
+        var $element = $(step_data.selector);
+        off(step_data.event);
+        $element.off(makeEventName(step_data.event));
+        destroyEnjoy();
+    };
 
     var stepAction = function () {
         if (data && data[current_step]) {
@@ -85,13 +107,14 @@ var EnjoyHint = function (_options) {
                 setTimeout(function () {
                     that.clear();
                 }, 250);
-                var scrollToSetting = {offset: -100 + (!isNaN(parseInt(step_data.scrollOffset)) ? step_data.scrollOffset : 0)};
                 var $element = $(step_data.selector);
                 if ($element.length > 0 && $element.is(':visible')) {
-                    $(document.body).scrollTo(step_data.selector, step_data.scrollAnimationSpeed || 250, scrollToSetting);
+
+                    $('html, body').animate({
+                        scrollTop: $(step_data.selector).offset().top + (!isNaN(parseInt(step_data.scrollOffset)) ? step_data.scrollOffset : -100)
+                    }, step_data.scrollAnimationSpeed || 250);
+
                     setTimeout(function () {
-
-
                         var event = makeEventName(step_data.event);
 
                         $body.enjoyhint('show');
@@ -141,15 +164,13 @@ var EnjoyHint = function (_options) {
                                         case 'click':
                                             break;
                                     }
-                                    current_step++;
-                                    stepAction();
+                                    nextStep();
                                     return;
                                     break;
                                 case 'custom':
                                     on(step_data.event, function () {
-                                        current_step++;
                                         off(step_data.event);
-                                        stepAction();
+                                        nextStep();
                                     });
                                     break;
                                 case 'next':
@@ -163,10 +184,8 @@ var EnjoyHint = function (_options) {
                                 if (step_data.keyCode && e.keyCode != step_data.keyCode) {
                                     return;
                                 }
-                                current_step++;
                                 $event_element.off(event);
-
-                                stepAction();
+                                nextStep();
                             });
 
                         }
@@ -175,7 +194,15 @@ var EnjoyHint = function (_options) {
                         var offset = $element.offset();
                         var w = $element.outerWidth();
                         var h = $element.outerHeight();
+
                         var shape_margin = (step_data.margin !== undefined) ? step_data.margin : 10;
+
+                        var shape_margin_x = (step_data.margin_x !== undefined) ? step_data.margin_x : shape_margin;
+                        var shape_margin_y = (step_data.margin_y !== undefined) ? step_data.margin_y : shape_margin;
+
+                        var shape_shift_x = (step_data.shift_x !== undefined) ? step_data.shift_x : 0;
+                        var shape_shift_y = (step_data.shift_y !== undefined) ? step_data.shift_y : 0;
+
                         var coords = {
                             x: offset.left + Math.round(w / 2),
                             y: offset.top + Math.round(h / 2) - $(document).scrollTop()
@@ -188,8 +215,9 @@ var EnjoyHint = function (_options) {
                             bottom: step_data.bottom,
                             left: step_data.left,
                             right: step_data.right,
-                            margin: step_data.margin,
-                            scroll: step_data.scroll
+                            margin: shape_margin,
+                            scroll: step_data.scroll,
+                            arrow: step_data.showArrow === undefined ? true : step_data.showArrow === true
                         };
 
                         if (step_data.shape && step_data.shape == 'circle') {
@@ -200,12 +228,15 @@ var EnjoyHint = function (_options) {
                             shape_data.width = w + shape_margin;
                             shape_data.height = h + shape_margin;
                         }
+
+                        shape_data.center_x += shape_shift_x;
+                        shape_data.center_y += shape_shift_y;
+
                         $body.enjoyhint('render_label_with_shape', shape_data);
 
                     }, step_data.scrollAnimationSpeed + 20 || 270);
                 } else {
-                    current_step++;
-                    stepAction();
+                    nextStep();
                 }
             }, timeout);
         } else {
@@ -213,18 +244,6 @@ var EnjoyHint = function (_options) {
             destroyEnjoy();
         }
 
-    };
-
-    var nextStep = function () {
-        current_step++;
-        stepAction();
-    };
-    var skipAll = function () {
-        var step_data = data[current_step];
-        var $element = $(step_data.selector);
-        off(step_data.event);
-        $element.off(makeEventName(step_data.event));
-        destroyEnjoy();
     };
 
     var makeEventName = function (name, is_custom) {
