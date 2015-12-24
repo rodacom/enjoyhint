@@ -426,30 +426,26 @@ CanvasRenderingContext2D.prototype.roundRect = function (x, y, w, h, r) {
                         'left': data.x + 'px',
                         position: 'absolute'
                     });
-                    // generation of blured background to prevent issue on description on highligting area
-                    var blurBackground = $('<div>').css({
-                        width: '100%',
-                        height: '100%',
-                        background: '#000',
-                        '-webkit-filter': 'blur(15px)',
-                        '-moz-filter': 'blur(15px)',
-                        '-o-filter': 'blur(15px)',
-                        '-ms-filter': 'blur(15px)',
-                        'filter': 'blur(15px)',
-                        position: 'absolute'
-                    });
                     // generation of text container
                     var textContainer = $('<div>').css({
                         position: 'relative',
+                        background: '#306FB2',
                         'max-width': Math.round(that.canvas_size.w * 0.75) + 'px',
-                        'min-width': Math.round(that.canvas_size.w * 0.45) + 'px'
+                        'min-width': Math.round(that.canvas_size.w * 0.25) + 'px',
+                        '-moz-box-shadow': '0px 0px 11px 10px #306FB2',
+                        '-webkit-box-shadow': '0px 0px 11px 10px #306FB2',
+                        '-o-box-shadow': '0px 0px 11px 10px #306FB2',
+                        'box-shadow': '0px 0px 11px 10px #306FB2',
+                        'filter': 'progid:DXImageTransform.Microsoft.Shadow(color=#306FB2, Direction=NaN, Strength=11)',
+                        '-moz-border-radius': '10px',
+                        '-webkit-border-radius': '10px',
+                        'border-radius': '10px',
+                        'padding': '10px'
                     }).html(data.text);
 
-                    labelContainer.append(blurBackground).append(textContainer).appendTo(that.enjoyhint);
+                    labelContainer.append(textContainer).appendTo(that.enjoyhint);
 
                     // label size setting updating
-                    blurBackground.width(textContainer.outerWidth());
-                    blurBackground.height(textContainer.outerHeight());
                     labelContainer.width(textContainer.outerWidth());
                     labelContainer.height(textContainer.outerHeight());
 
